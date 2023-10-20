@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Orgs</string>
     <string name="cesta_de_frutas">Cesta de Frutas</string>
+    <string name="formulario_produto_nome_hint">Nome</string>
+    <string name="formulario_produto_descricao_hint">Descrição</string>
+    <string name="formulario_produto_valor_hint">Valor</string>
+    <string name="formulario_produto_valor_text">Salvar</string>
+    <string name="formulario_produto_imagem_description">Imagem do produto</string>
 </resources>
