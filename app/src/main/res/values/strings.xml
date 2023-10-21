@@ -6,4 +6,7 @@
     <string name="formulario_produto_valor_hint">Valor</string>
     <string name="formulario_produto_valor_text">Salvar</string>
     <string name="formulario_produto_imagem_description">Imagem do produto</string>
+    <string name="formulario_imagem_botao_carregar">Carregar</string>
+    <string name="formulario_imagem_imageview_description">Imagem padrão</string>
+    <string name="formulario_imagem_edittext_hint">URL da imagem</string>
 </resources>

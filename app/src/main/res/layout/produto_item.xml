@@ -61,13 +61,13 @@
             android:id="@+id/produto_item_imagem"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             app:layout_constraintWidth_percent="0.3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/produto_item_nome"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/cesta_de_frutas" />
+            app:srcCompat="@drawable/imagem_padrao" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,25 +1,19 @@
 package com.adrywill.orgs.dao
 
-import com.adrywill.orgs.model.Produtos
+import com.adrywill.orgs.model.Produto
 import java.math.BigDecimal
 
 class ProdutosDao {
 
-    fun adiciona(produto: Produtos) {
+    fun adiciona(produto: Produto) {
         produtos.add(produto)
     }
 
-    fun buscaTodos(): List<Produtos> {
+    fun buscaTodos(): List<Produto> {
         return produtos.toList()
     }
 
     companion object {
-        private val produtos = mutableListOf<Produtos>(
-            Produtos(
-                "Salada de Frutas",
-                "Laranja, maçãs e uvas",
-                BigDecimal("19.83")
-            )
-        )
+        private val produtos = mutableListOf<Produto>()
     }
 }
