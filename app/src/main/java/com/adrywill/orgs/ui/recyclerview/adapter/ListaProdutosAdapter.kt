@@ -1,6 +1,7 @@
 package com.adrywill.orgs.ui.recyclerview.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,19 +10,33 @@ import coil.load
 import com.adrywill.orgs.databinding.ProdutoItemBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
 import com.adrywill.orgs.model.Produto
+import com.adrywill.orgs.ui.activity.DetalhesProduto
 import java.text.NumberFormat
 import java.util.Locale
 
 class ListaProdutosAdapter(
     private val context: Context,
-    produtos: List<Produto>
+    produtos: List<Produto>,
+    var quandoClicaNoItemListener: (produto: Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ProdutoItemHolder>() {
 
     private val produtos = produtos.toMutableList()
 
-    class ProdutoItemHolder(view: View, binding: ProdutoItemBinding) : RecyclerView.ViewHolder(view) {
+    inner class ProdutoItemHolder(view: View, binding: ProdutoItemBinding) : RecyclerView.ViewHolder(view) {
         private var layoutBinding = binding
+
+        private lateinit var produto: Produto
+
+        init {
+            itemView.setOnClickListener {
+                if (::produto.isInitialized) {
+                    quandoClicaNoItemListener(produto)
+                }
+            }
+        }
+
         fun vincula(produto: Produto) {
+            this.produto = produto
             layoutBinding.produtoItemNome.text = produto.nome
             layoutBinding.produtoItemDescricao.text = produto.descricao
             layoutBinding.produtoItemValor.text =
@@ -51,8 +66,7 @@ class ListaProdutosAdapter(
     fun atualiza(produtos: List<Produto>) {
         this.produtos.clear()
         this.produtos.addAll(produtos)
-//        notifyDataSetChanged()
-        notifyItemInserted(produtos.lastIndex)
+        notifyDataSetChanged()
     }
 
 }

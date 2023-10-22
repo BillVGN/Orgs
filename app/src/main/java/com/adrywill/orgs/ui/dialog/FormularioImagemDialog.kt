@@ -8,22 +8,30 @@ import com.adrywill.orgs.extensions.tentaCarregarImagem
 
 class FormularioImagemDialog(private val context: Context) {
 
-    private var url: String? = null
+    private var url: String = ""
 
-    fun mostra() {
-        val binding = FormularioImagemBinding.inflate(LayoutInflater.from(context))
-        binding.formularioImagemBotaoCarregar.setOnClickListener {
-            url = binding.formularioImagemUrl.text.toString()
-            binding.formularioImagemImageview.tentaCarregarImagem(url)
-        }
-        AlertDialog.Builder(context)
-            .setView(binding.root)
-            .setPositiveButton("Carregar") { _, _ ->
-//                Precisa poder utilizar o binding de layout da activity
-//                layoutFormularioProduto.activityFormularioProdutoImagem.tentaCarregarImagem(url)
+    fun mostra(
+        urlPadrao: String? = null,
+        quandoImagemCarregada: (imagem: String) -> Unit
+    ) {
+        FormularioImagemBinding.inflate(LayoutInflater.from(context)).apply {
+            urlPadrao?.let {
+                formularioImagemImageview.tentaCarregarImagem(it)
+                formularioImagemUrl.setText(it)
             }
-            .setNegativeButton("Cancelar") { _, _ -> }
-            .show()
+            formularioImagemBotaoCarregar.setOnClickListener {
+                url = formularioImagemUrl.text.toString()
+                formularioImagemImageview.tentaCarregarImagem(url)
+            }
+            AlertDialog.Builder(context)
+                .setView(root)
+                .setPositiveButton("Carregar") { _, _ ->
+                    quandoImagemCarregada(url)
+                }
+                .setNegativeButton("Cancelar") { _, _ -> }
+                .show()
+        }
+
     }
 
 }

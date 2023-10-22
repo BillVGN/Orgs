@@ -1,20 +1,11 @@
 package com.adrywill.orgs.ui.activity
 
-import android.graphics.drawable.Drawable
-import android.media.Image
-import android.os.Build.VERSION.SDK_INT
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore.Images
-import androidx.appcompat.app.AlertDialog
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.load
-import com.adrywill.orgs.R
+import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import com.adrywill.orgs.dao.ProdutosDao
+import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityFormularioProdutoBinding
-import com.adrywill.orgs.databinding.FormularioImagemBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
 import com.adrywill.orgs.model.Produto
 import com.adrywill.orgs.ui.dialog.FormularioImagemDialog
@@ -33,31 +24,38 @@ class FormularioProdutoActivity : AppCompatActivity() {
         configuraBotaoSalvar()
         configuraClickImagem()
         setContentView(layoutFormularioProduto.root)
+        title = "Cadastrar Produto"
     }
 
     private fun configuraClickImagem() {
         layoutFormularioProduto.activityFormularioProdutoImagem.setOnClickListener {
-            FormularioImagemDialog(this).mostra()
+            FormularioImagemDialog(this)
+                .mostra(url) {imagem ->
+                    url = imagem
+                    layoutFormularioProduto.activityFormularioProdutoImagem.tentaCarregarImagem(url)
+                }
         }
     }
 
     private fun configuraBotaoSalvar() {
-        val dao = ProdutosDao()
+        val produtoDao = AppDatabase.instancia(this).produtoDao()
         layoutFormularioProduto.activityProdutoItemBotaoSalvar.setOnClickListener {
-            dao.adiciona(criaProduto())
+            produtoDao.salva(criaProduto())
             finish()
         }
 
     }
 
     private fun criaProduto(): Produto {
-        val valorEmTexto = layoutFormularioProduto.activityFormularioProdutoValor.text.toString()
-        return Produto(
-            layoutFormularioProduto.activityFormularioProdutoNome.text.toString(),
-            layoutFormularioProduto.activityFormularioProdutoDescricao.text.toString(),
-            if (valorEmTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorEmTexto),
-            url
-        )
+        with(layoutFormularioProduto) {
+            val valorEmTexto = activityFormularioProdutoValor.text.toString()
+            return Produto(
+                nome = activityFormularioProdutoNome.text.toString(),
+                descricao = activityFormularioProdutoDescricao.text.toString(),
+                valor = if (valorEmTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorEmTexto),
+                imagem = url
+            )
+        }
     }
 
 }

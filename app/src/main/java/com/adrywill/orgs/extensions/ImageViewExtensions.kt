@@ -1,7 +1,6 @@
 package com.adrywill.orgs.extensions
 
 import android.widget.ImageView
-import coil.ImageLoader
 import coil.load
 import com.adrywill.orgs.R
 
