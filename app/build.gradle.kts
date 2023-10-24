@@ -5,6 +5,17 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+class RoomSchemaArgProvider(
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val schemaDir: File
+) : CommandLineArgumentProvider {
+
+    override fun asArguments(): Iterable<String> {
+        return listOf("room.schemaLocation=${schemaDir.path}")
+    }
+}
+
 android {
     namespace = "com.adrywill.orgs"
     compileSdk = 34
@@ -39,6 +50,10 @@ android {
     viewBinding {
         enable = true
     }
+
+    ksp {
+        arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
+    }
 }
 
 dependencies {
@@ -49,6 +64,7 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.room:room-ktx:2.6.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

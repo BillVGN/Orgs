@@ -1,23 +1,21 @@
 package com.adrywill.orgs.ui.recyclerview.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.adrywill.orgs.databinding.ProdutoItemBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
 import com.adrywill.orgs.model.Produto
-import com.adrywill.orgs.ui.activity.DetalhesProduto
 import java.text.NumberFormat
 import java.util.Locale
 
 class ListaProdutosAdapter(
     private val context: Context,
-    produtos: List<Produto>,
-    var quandoClicaNoItemListener: (produto: Produto) -> Unit = {}
+    produtos: List<Produto> = emptyList(),
+    var quandoClicaNoItemListener: (produto: Produto) -> Unit = {},
+    var quandoPressionaItemListener: (produto: Produto, view: View) -> Unit = { produto: Produto, view: View -> }
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ProdutoItemHolder>() {
 
     private val produtos = produtos.toMutableList()
@@ -28,6 +26,13 @@ class ListaProdutosAdapter(
         private lateinit var produto: Produto
 
         init {
+            itemView.setOnLongClickListener{
+                if (::produto.isInitialized) {
+                    quandoPressionaItemListener(produto, it)
+                }
+                return@setOnLongClickListener true
+            }
+
             itemView.setOnClickListener {
                 if (::produto.isInitialized) {
                     quandoClicaNoItemListener(produto)
