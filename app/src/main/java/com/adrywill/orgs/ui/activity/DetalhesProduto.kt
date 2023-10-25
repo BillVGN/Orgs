@@ -40,7 +40,8 @@ class DetalhesProduto : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_detalhes_produto_remover -> {
-                produto.let { produtoDao.remove(it) }
+//                produtoDao.remove(produtoDao.buscaProduto(idProduto)!!)
+                produtoDao.removeProdutoPorId(idProduto)
                 finish()
             }
 

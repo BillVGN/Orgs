@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -37,6 +39,55 @@ class ListaProdutosActivity : AppCompatActivity() {
         atualizaLista(produtoDao)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_lista_produtos_ordenacao, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        with(AppDatabase.instancia(this).produtoDao()) {
+            when (item.itemId) {
+
+                R.id.menu_lista_produtos_ordenacao -> {
+                    // Não faz nada porque se trata do botão raiz que mostra os demais
+                }
+
+                R.id.menu_lista_produtos_ordenacao_nome_asc -> {
+                    adapter.atualiza(buscaOrdenadaPorNome(true))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_nome_desc -> {
+                    adapter.atualiza(buscaOrdenadaPorNome(false))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_descricao_asc -> {
+                    adapter.atualiza(buscaOrdenadaPorDescricao(true))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_descricao_desc -> {
+                    adapter.atualiza(buscaOrdenadaPorDescricao(false))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_valor_asc -> {
+                    adapter.atualiza(buscaOrdenadaPorValor(true))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_valor_desc -> {
+                    adapter.atualiza(buscaOrdenadaPorValor(false))
+                }
+
+                R.id.menu_lista_produtos_ordenacao_nenhuma -> {
+                    adapter.atualiza(buscaTodos())
+                }
+
+                else -> {
+                    adapter.atualiza(buscaTodos())
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun configuraFAB() {
         layout.activityListaProdutosBotaoNovoProduto.setOnClickListener {
             vaiParaFormularioProduto()
@@ -67,17 +118,20 @@ class ListaProdutosActivity : AppCompatActivity() {
         adapter.quandoPressionaItemListener = { produto: Produto, view: View ->
             PopupMenu(this, view).apply {
                 setOnMenuItemClickListener {
-                    return@setOnMenuItemClickListener when(it.itemId) {
+                    return@setOnMenuItemClickListener when (it.itemId) {
                         R.id.menu_detalhes_produto_editar -> {
                             vaiParaFormularioProduto(produto.id)
                             true
                         }
+
                         R.id.menu_detalhes_produto_remover -> {
-                            val produtoDao = AppDatabase.instancia(this@ListaProdutosActivity).produtoDao()
+                            val produtoDao =
+                                AppDatabase.instancia(this@ListaProdutosActivity).produtoDao()
                             produtoDao.remove(produto)
                             atualizaLista(produtoDao)
                             true
                         }
+
                         else -> false
                     }
                 }
