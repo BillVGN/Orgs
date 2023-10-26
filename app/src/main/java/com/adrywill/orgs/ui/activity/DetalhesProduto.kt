@@ -2,12 +2,11 @@ package com.adrywill.orgs.ui.activity
 
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityDetalhesProdutoBinding
@@ -20,7 +19,6 @@ private const val TAG = "DetalhesProduto"
 
 class DetalhesProduto : AppCompatActivity() {
 
-    private lateinit var produto: Produto
     private var idProduto = 0L
 
     private val layoutDetalhesProduto by lazy {

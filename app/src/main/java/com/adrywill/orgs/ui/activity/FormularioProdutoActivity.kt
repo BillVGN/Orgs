@@ -4,8 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.Room
-import coil.load
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityFormularioProdutoBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem

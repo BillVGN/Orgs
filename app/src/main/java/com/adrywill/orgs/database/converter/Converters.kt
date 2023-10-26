@@ -1,7 +1,6 @@
 package com.adrywill.orgs.database.converter
 
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import java.math.BigDecimal
 
 class Converters {

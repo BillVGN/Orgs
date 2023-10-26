@@ -1,21 +1,20 @@
 package com.adrywill.orgs.ui.activity
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.room.Room
 import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
-import com.adrywill.orgs.database.dao.ProdutoDao
 import com.adrywill.orgs.databinding.ActivityListaProdutosBinding
 import com.adrywill.orgs.model.Produto
 import com.adrywill.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "ListaProdutosActivity"
 
@@ -25,18 +24,25 @@ class ListaProdutosActivity : AppCompatActivity() {
     private val layout by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
     }
+    private val produtoDao by lazy {
+        AppDatabase.instancia(this).produtoDao()
+    }
+    private var ordenacaoLista: Int = R.id.menu_lista_produtos_ordenacao_nenhuma
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setContentView(this.layout.root)
         configuraRecyclerView()
         configuraFAB()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onResume() {
+        val scope = MainScope()
+        scope.launch {
+            delay(2000)
+            atualizaListaOrdenada(ordenacaoLista)
+        }
         super.onResume()
-        val produtoDao = AppDatabase.instancia(this).produtoDao()
-        atualizaLista(produtoDao)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -45,8 +51,14 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        with(AppDatabase.instancia(this).produtoDao()) {
-            when (item.itemId) {
+        item.isChecked = true
+        atualizaListaOrdenada(item.itemId)
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun atualizaListaOrdenada(idMenuItem: Int) {
+        with(produtoDao) {
+            when (idMenuItem) {
 
                 R.id.menu_lista_produtos_ordenacao -> {
                     // Não faz nada porque se trata do botão raiz que mostra os demais
@@ -85,17 +97,13 @@ class ListaProdutosActivity : AppCompatActivity() {
                 }
             }
         }
-        return super.onOptionsItemSelected(item)
+        ordenacaoLista = idMenuItem
     }
 
     private fun configuraFAB() {
         layout.activityListaProdutosBotaoNovoProduto.setOnClickListener {
             vaiParaFormularioProduto()
         }
-    }
-
-    private fun atualizaLista(produtoDao: ProdutoDao) {
-        adapter.atualiza(produtoDao.buscaTodos())
     }
 
     private fun vaiParaFormularioProduto(idProduto: Long = 0L) {
@@ -128,7 +136,7 @@ class ListaProdutosActivity : AppCompatActivity() {
                             val produtoDao =
                                 AppDatabase.instancia(this@ListaProdutosActivity).produtoDao()
                             produtoDao.remove(produto)
-                            atualizaLista(produtoDao)
+                            atualizaListaOrdenada(ordenacaoLista)
                             true
                         }
 

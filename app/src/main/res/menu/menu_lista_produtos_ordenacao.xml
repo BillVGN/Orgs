@@ -10,41 +10,47 @@
         <menu
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_nome_asc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Nome Crescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_nome_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Nome Decrescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_descricao_asc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Descrição Crescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_descricao_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Descrição Decrescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_valor_asc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Valor Crescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_valor_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Valor Decrescente" />
-            <item
-                android:id="@+id/menu_lista_produtos_ordenacao_nenhuma"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Sem Ordenação" />
+            <group
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_nome_asc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Nome Crescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_nome_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Nome Decrescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_descricao_asc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Descrição Crescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_descricao_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Descrição Decrescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_valor_asc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Valor Crescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_valor_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:title="Valor Decrescente" />
+                <item
+                    android:id="@+id/menu_lista_produtos_ordenacao_nenhuma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:title="Sem Ordenação" />
+            </group>
         </menu>
     </item>
 </menu>
