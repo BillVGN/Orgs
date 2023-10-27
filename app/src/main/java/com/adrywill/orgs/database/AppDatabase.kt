@@ -7,12 +7,23 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.adrywill.orgs.database.converter.Converters
 import com.adrywill.orgs.database.dao.ProdutoDao
+import com.adrywill.orgs.database.dao.UsuarioDao
 import com.adrywill.orgs.model.Produto
+import com.adrywill.orgs.model.Usuario
 
-@Database(entities = [Produto::class], version = 1, exportSchema = true)
+@Database(
+    entities = [
+        Produto::class,
+        Usuario::class
+    ],
+    version = 2,
+    exportSchema = true
+)
 @TypeConverters(Converters::class)
-abstract class AppDatabase: RoomDatabase() {
-    abstract fun produtoDao() : ProdutoDao
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun produtoDao(): ProdutoDao
+
+    abstract fun usuarioDao(): UsuarioDao
 
     companion object {
         @Volatile
@@ -24,7 +35,7 @@ abstract class AppDatabase: RoomDatabase() {
                 context,
                 AppDatabase::class.java,
                 "orgs.db"
-            ).allowMainThreadQueries()
+            ).fallbackToDestructiveMigration()
                 .build().also {
                     db = it
                 }

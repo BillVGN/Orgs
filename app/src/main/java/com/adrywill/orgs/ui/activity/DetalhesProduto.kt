@@ -11,7 +11,9 @@ import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityDetalhesProdutoBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
-import com.adrywill.orgs.model.Produto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -27,6 +29,8 @@ class DetalhesProduto : AppCompatActivity() {
 
     private val produtoDao by lazy { AppDatabase.instancia(this).produtoDao() }
 
+    private val scope = CoroutineScope(Main)
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +42,9 @@ class DetalhesProduto : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_detalhes_produto_remover -> {
-//                produtoDao.remove(produtoDao.buscaProduto(idProduto)!!)
-                produtoDao.removeProdutoPorId(idProduto)
+                scope.launch {
+                    produtoDao.removeProdutoPorId(idProduto)
+                }
                 finish()
             }
 
@@ -64,19 +69,22 @@ class DetalhesProduto : AppCompatActivity() {
     }
 
     override fun onResume() {
-        super.onResume()
         vinculaProduto(idProduto)
+        super.onResume()
     }
 
     private fun vinculaProduto(idProduto: Long) {
         with(layoutDetalhesProduto) {
-            val produto = produtoDao.buscaProduto(idProduto)
-            detalhesProdutoImagem.tentaCarregarImagem(produto?.imagem)
-            detalhesProdutoNome.text = produto?.nome
-            detalhesProdutoDescricao.text = produto?.descricao
-            detalhesProdutoValor.text =
-                NumberFormat.getCurrencyInstance(Locale("pt", "br"))
-                    .format(produto?.valor)
+            scope.launch {
+                produtoDao.buscaProduto(idProduto).collect {
+                    detalhesProdutoImagem.tentaCarregarImagem(it?.imagem)
+                    detalhesProdutoNome.text = it?.nome
+                    detalhesProdutoDescricao.text = it?.descricao
+                    detalhesProdutoValor.text =
+                        NumberFormat.getCurrencyInstance(Locale("pt", "br"))
+                            .format(it?.valor)
+                }
+            }
         }
     }
 }
