@@ -7,13 +7,13 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.lifecycleScope
 import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityListaProdutosBinding
 import com.adrywill.orgs.model.Produto
 import com.adrywill.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 private const val TAG = "ListaProdutosActivity"
@@ -33,16 +33,12 @@ class ListaProdutosActivity : AppCompatActivity() {
         setContentView(this.layout.root)
         configuraRecyclerView()
         configuraFAB()
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onResume() {
-        val scope = MainScope()
-        scope.launch {
-            delay(2000)
-            atualizaListaOrdenada(ordenacaoLista)
+        lifecycleScope.launch {
+            buscaListaOrdenada(ordenacaoLista).collect{
+                adapter.atualiza(it)
+            }
         }
-        super.onResume()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -52,52 +48,50 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         item.isChecked = true
-        atualizaListaOrdenada(item.itemId)
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun atualizaListaOrdenada(idMenuItem: Int) {
-        with(produtoDao) {
-            when (idMenuItem) {
-
-                R.id.menu_lista_produtos_ordenacao -> {
-                    // Não faz nada porque se trata do botão raiz que mostra os demais
-                }
-
-                R.id.menu_lista_produtos_ordenacao_nome_asc -> {
-                    adapter.atualiza(buscaOrdenadaPorNome(true))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_nome_desc -> {
-                    adapter.atualiza(buscaOrdenadaPorNome(false))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_descricao_asc -> {
-                    adapter.atualiza(buscaOrdenadaPorDescricao(true))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_descricao_desc -> {
-                    adapter.atualiza(buscaOrdenadaPorDescricao(false))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_valor_asc -> {
-                    adapter.atualiza(buscaOrdenadaPorValor(true))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_valor_desc -> {
-                    adapter.atualiza(buscaOrdenadaPorValor(false))
-                }
-
-                R.id.menu_lista_produtos_ordenacao_nenhuma -> {
-                    adapter.atualiza(buscaTodos())
-                }
-
-                else -> {
-                    adapter.atualiza(buscaTodos())
+        if (item.itemId != R.id.menu_lista_produtos_ordenacao) {
+            lifecycleScope.launch {
+                buscaListaOrdenada(item.itemId).collect{
+                    adapter.atualiza(it)
                 }
             }
         }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private suspend fun buscaListaOrdenada(idMenuItem: Int): Flow<List<Produto>> {
         ordenacaoLista = idMenuItem
+        val flowProdutos = with(produtoDao) {
+            when (idMenuItem) {
+                R.id.menu_lista_produtos_ordenacao_nome_asc -> {
+                    buscaOrdenadaPorNome(true)
+                }
+
+                R.id.menu_lista_produtos_ordenacao_nome_desc -> {
+                    buscaOrdenadaPorNome(false)
+                }
+
+                R.id.menu_lista_produtos_ordenacao_descricao_asc -> {
+                    buscaOrdenadaPorDescricao(true)
+                }
+
+                R.id.menu_lista_produtos_ordenacao_descricao_desc -> {
+                    buscaOrdenadaPorDescricao(false)
+                }
+
+                R.id.menu_lista_produtos_ordenacao_valor_asc -> {
+                    buscaOrdenadaPorValor(true)
+                }
+
+                R.id.menu_lista_produtos_ordenacao_valor_desc -> {
+                    buscaOrdenadaPorValor(false)
+                }
+
+                else -> {
+                    buscaTodos()
+                }
+            }
+        }
+        return flowProdutos
     }
 
     private fun configuraFAB() {
@@ -125,8 +119,8 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
         adapter.quandoPressionaItemListener = { produto: Produto, view: View ->
             PopupMenu(this, view).apply {
-                setOnMenuItemClickListener {
-                    return@setOnMenuItemClickListener when (it.itemId) {
+                setOnMenuItemClickListener { menuItem ->
+                    return@setOnMenuItemClickListener when (menuItem.itemId) {
                         R.id.menu_detalhes_produto_editar -> {
                             vaiParaFormularioProduto(produto.id)
                             true
@@ -135,8 +129,12 @@ class ListaProdutosActivity : AppCompatActivity() {
                         R.id.menu_detalhes_produto_remover -> {
                             val produtoDao =
                                 AppDatabase.instancia(this@ListaProdutosActivity).produtoDao()
-                            produtoDao.remove(produto)
-                            atualizaListaOrdenada(ordenacaoLista)
+                            lifecycleScope.launch {
+                                produtoDao.remove(produto)
+                                buscaListaOrdenada(ordenacaoLista).collect {
+                                    adapter.atualiza(it)
+                                }
+                            }
                             true
                         }
 

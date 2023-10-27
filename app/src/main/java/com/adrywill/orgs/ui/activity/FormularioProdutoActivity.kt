@@ -9,6 +9,9 @@ import com.adrywill.orgs.databinding.ActivityFormularioProdutoBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
 import com.adrywill.orgs.model.Produto
 import com.adrywill.orgs.ui.dialog.FormularioImagemDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
@@ -27,6 +30,8 @@ class FormularioProdutoActivity : AppCompatActivity() {
         AppDatabase.instancia(this).produtoDao()
     }
 
+    private var scope = CoroutineScope(Main)
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +40,14 @@ class FormularioProdutoActivity : AppCompatActivity() {
         setContentView(layoutFormularioProduto.root)
         if (intent.hasExtra(CHAVE_PRODUTO_ID)) {
             idProduto = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
-            produtoDao.buscaProduto(idProduto)?.let { carregaProduto(it) }
+            scope.launch {
+                produtoDao.buscaProduto(idProduto).collect {
+                    it?.let {
+                        carregaProduto(it)
+                    }
+                }
+                title = "Alterar Produto"
+            }
         }
         title = "Cadastrar Produto"
     }
@@ -43,7 +55,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private fun configuraClickImagem() {
         layoutFormularioProduto.activityFormularioProdutoImagem.setOnClickListener {
             FormularioImagemDialog(this)
-                .mostra(url) {imagem ->
+                .mostra(url) { imagem ->
                     url = imagem
                     layoutFormularioProduto.activityFormularioProdutoImagem.tentaCarregarImagem(url)
                 }
@@ -53,7 +65,10 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private fun configuraBotaoSalvar() {
         val produtoDao = AppDatabase.instancia(this).produtoDao()
         layoutFormularioProduto.activityProdutoItemBotaoSalvar.setOnClickListener {
-            produtoDao.salva(criaProduto())
+            val produto = criaProduto()
+            scope.launch {
+                produtoDao.salva(produto)
+            }
             finish()
         }
 

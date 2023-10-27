@@ -6,43 +6,44 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.adrywill.orgs.model.Produto
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProdutoDao {
 
     @Query("SELECT * FROM Produto")
-    fun buscaTodos(): List<Produto>
+    fun buscaTodos(): Flow<List<Produto>>
 
     @Query(
         "SELECT * FROM Produto ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN nome END ASC, " +
                 "CASE WHEN :crescente = 0 THEN nome END DESC"
     )
-    fun buscaOrdenadaPorNome(crescente: Boolean): List<Produto>
+    fun buscaOrdenadaPorNome(crescente: Boolean): Flow<List<Produto>>
 
     @Query(
         "SELECT * FROM Produto ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN descricao END ASC, " +
                 "CASE WHEN :crescente = 0 THEN descricao END DESC"
     )
-    fun buscaOrdenadaPorDescricao(crescente: Boolean): List<Produto>
+    fun buscaOrdenadaPorDescricao(crescente: Boolean): Flow<List<Produto>>
 
     @Query(
         "SELECT * FROM Produto ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN valor END ASC, " +
                 "CASE WHEN :crescente = 0 THEN valor END DESC"
     )
-    fun buscaOrdenadaPorValor(crescente: Boolean): List<Produto>
+    fun buscaOrdenadaPorValor(crescente: Boolean): Flow<List<Produto>>
 
     @Query("SELECT * FROM Produto WHERE id = :idProduto")
-    fun buscaProduto(idProduto: Long): Produto?
+    fun buscaProduto(idProduto: Long): Flow<Produto?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun salva(vararg produto: Produto)
+    suspend fun salva(vararg produto: Produto)
 
     @Delete
-    fun remove(produto: Produto)
+    suspend fun remove(produto: Produto)
 
     @Query("DELETE FROM Produto WHERE id = :id")
-    fun removeProdutoPorId(id: Long)
+    suspend fun removeProdutoPorId(id: Long)
 }
