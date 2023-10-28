@@ -9,43 +9,43 @@
         app:showAsAction="ifRoom">
         <menu
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
             <group
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:checkableBehavior="single">
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_nome_asc"
+                    android:id="@+id/menu_lista_produtos_nome_asc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Nome Crescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_nome_desc"
+                    android:id="@+id/menu_lista_produtos_nome_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Nome Decrescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_descricao_asc"
+                    android:id="@+id/menu_lista_produtos_descricao_asc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Descrição Crescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_descricao_desc"
+                    android:id="@+id/menu_lista_produtos_descricao_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Descrição Decrescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_valor_asc"
+                    android:id="@+id/menu_lista_produtos_valor_asc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Valor Crescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_valor_desc"
+                    android:id="@+id/menu_lista_produtos_valor_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:title="Valor Decrescente" />
                 <item
-                    android:id="@+id/menu_lista_produtos_ordenacao_nenhuma"
+                    android:id="@+id/menu_lista_produtos_nenhuma"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -53,4 +53,11 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/menu_lista_produtos_sair_do_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_action_sair_do_app"
+        android:title="Sair do App"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -11,6 +11,7 @@ import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityDetalhesProdutoBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
+import com.adrywill.orgs.extensions.vaiPara
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
@@ -63,9 +64,9 @@ class DetalhesProduto : AppCompatActivity() {
     }
 
     private fun editaProduto() {
-        val intent = Intent(this, FormularioProdutoActivity::class.java)
-            .putExtra(CHAVE_PRODUTO_ID, idProduto)
-        startActivity(intent)
+        vaiPara(FormularioProdutoActivity::class.java) {
+            putExtra(CHAVE_PRODUTO_ID, idProduto)
+        }
     }
 
     override fun onResume() {

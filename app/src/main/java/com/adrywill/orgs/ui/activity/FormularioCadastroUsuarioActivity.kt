@@ -2,11 +2,11 @@ package com.adrywill.orgs.ui.activity
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityFormularioCadastroUsuarioBinding
+import com.adrywill.orgs.extensions.toast
 import com.adrywill.orgs.model.Usuario
 import kotlinx.coroutines.launch
 
@@ -30,20 +30,19 @@ class FormularioCadastroUsuarioActivity : AppCompatActivity() {
 
     private fun configuraBotaoCadastrar() {
         layout.activityFormularioCadastroBotaoCadastrar.setOnClickListener {
-            val novoUsuario = criaUsuario()
-            Log.i(TAG, "onCreate: $novoUsuario")
-            lifecycleScope.launch {
-                try {
-                    usuarioDao.salva(novoUsuario)
-                    finish()
-                } catch (e: Exception) {
-                    Log.e(TAG, "configuraBotaoCadastrar: ", e)
-                    Toast.makeText(
-                        this@FormularioCadastroUsuarioActivity,
-                        "Falha ao cadastrar usuário",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+            val usuario = criaUsuario()
+            cadastra(usuario)
+        }
+    }
+
+    private fun cadastra(usuario: Usuario) {
+        lifecycleScope.launch {
+            try {
+                usuarioDao.salva(usuario)
+                finish()
+            } catch (e: Exception) {
+                Log.e(TAG, "configuraBotaoCadastrar: ", e)
+                toast("Falha ao cadastrar usuário")
             }
         }
     }

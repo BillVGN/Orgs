@@ -2,18 +2,23 @@ package com.adrywill.orgs.ui.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityFormularioProdutoBinding
 import com.adrywill.orgs.extensions.tentaCarregarImagem
 import com.adrywill.orgs.model.Produto
+import com.adrywill.orgs.preferences.dataStore
+import com.adrywill.orgs.preferences.usuarioLogadoPreferences
 import com.adrywill.orgs.ui.dialog.FormularioImagemDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
+private const val TAG = "FormularioProduto"
 class FormularioProdutoActivity : AppCompatActivity() {
 
     private var idProduto = 0L
@@ -30,7 +35,9 @@ class FormularioProdutoActivity : AppCompatActivity() {
         AppDatabase.instancia(this).produtoDao()
     }
 
-    private var scope = CoroutineScope(Main)
+    private val usuarioDao by lazy {
+        AppDatabase.instancia(this).usuarioDao()
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,13 +47,22 @@ class FormularioProdutoActivity : AppCompatActivity() {
         setContentView(layoutFormularioProduto.root)
         if (intent.hasExtra(CHAVE_PRODUTO_ID)) {
             idProduto = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
-            scope.launch {
+            lifecycleScope.launch {
                 produtoDao.buscaProduto(idProduto).collect {
                     it?.let {
                         carregaProduto(it)
                     }
                 }
                 title = "Alterar Produto"
+            }
+        }
+        lifecycleScope.launch {
+            dataStore.data.collect {preferences ->
+                preferences[usuarioLogadoPreferences]?.let { usuarioId ->
+                    usuarioDao.buscaPorId(usuarioId).collect{
+                        Log.i(TAG, "onCreate: $it")
+                    }
+                }
             }
         }
         title = "Cadastrar Produto"
@@ -66,7 +82,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         val produtoDao = AppDatabase.instancia(this).produtoDao()
         layoutFormularioProduto.activityProdutoItemBotaoSalvar.setOnClickListener {
             val produto = criaProduto()
-            scope.launch {
+            lifecycleScope.launch {
                 produtoDao.salva(produto)
             }
             finish()
