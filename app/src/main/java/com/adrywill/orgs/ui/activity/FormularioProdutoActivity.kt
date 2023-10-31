@@ -15,11 +15,15 @@ import com.adrywill.orgs.preferences.usuarioLogadoPreferences
 import com.adrywill.orgs.ui.dialog.FormularioImagemDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 private const val TAG = "FormularioProduto"
-class FormularioProdutoActivity : AppCompatActivity() {
+
+class FormularioProdutoActivity : UsuarioBaseActivity() {
 
     private var idProduto = 0L
 
@@ -57,12 +61,8 @@ class FormularioProdutoActivity : AppCompatActivity() {
             }
         }
         lifecycleScope.launch {
-            dataStore.data.collect {preferences ->
-                preferences[usuarioLogadoPreferences]?.let { usuarioId ->
-                    usuarioDao.buscaPorId(usuarioId).collect{
-                        Log.i(TAG, "onCreate: $it")
-                    }
-                }
+            usuario.filterNotNull().collect {
+                Log.i(TAG, "onCreate: $it")
             }
         }
         title = "Cadastrar Produto"
@@ -81,16 +81,18 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private fun configuraBotaoSalvar() {
         val produtoDao = AppDatabase.instancia(this).produtoDao()
         layoutFormularioProduto.activityProdutoItemBotaoSalvar.setOnClickListener {
-            val produto = criaProduto()
             lifecycleScope.launch {
-                produtoDao.salva(produto)
+                usuario.value?.let {usuario ->
+                    val produto = criaProduto(usuario.id)
+                    produtoDao.salva(produto)
+                    finish()
+                }
             }
-            finish()
         }
 
     }
 
-    private fun criaProduto(): Produto {
+    private fun criaProduto(usuarioId: String): Produto {
         with(layoutFormularioProduto) {
             val valorEmTexto = activityFormularioProdutoValor.text.toString()
             produto = Produto(
@@ -98,7 +100,8 @@ class FormularioProdutoActivity : AppCompatActivity() {
                 nome = activityFormularioProdutoNome.text.toString(),
                 descricao = activityFormularioProdutoDescricao.text.toString(),
                 valor = if (valorEmTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorEmTexto),
-                imagem = url
+                imagem = url,
+                usuarioId = usuarioId
             )
             return produto as Produto
         }

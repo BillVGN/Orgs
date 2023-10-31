@@ -3,11 +3,12 @@ package com.adrywill.orgs.model
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
-@Entity
+@Entity()
 @Parcelize
 data class Produto(
     @PrimaryKey(true)
@@ -16,5 +17,6 @@ data class Produto(
     val descricao: String,
     @ColumnInfo(typeAffinity = ColumnInfo.REAL)
     val valor: BigDecimal,
-    val imagem: String? = null
+    val imagem: String? = null,
+    val usuarioId: String? = null
 ) : Parcelable

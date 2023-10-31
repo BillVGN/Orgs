@@ -54,10 +54,10 @@
         </menu>
     </item>
     <item
-        android:id="@+id/menu_lista_produtos_sair_do_app"
+        android:id="@+id/menu_lista_produtos_perfil_usuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/ic_action_sair_do_app"
-        android:title="Sair do App"
+        android:icon="@drawable/ic_action_perfil"
+        android:title="@string/menu_lista_produtos_perfil_usuario"
         app:showAsAction="ifRoom" />
 </menu>

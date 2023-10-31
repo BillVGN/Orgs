@@ -14,26 +14,29 @@ interface ProdutoDao {
     @Query("SELECT * FROM Produto")
     fun buscaTodos(): Flow<List<Produto>>
 
+    @Query("SELECT * FROM Produto WHERE usuarioId = :usuarioId")
+    fun buscaTodosDoUsuario(usuarioId: String) : Flow<List<Produto>>
+
     @Query(
-        "SELECT * FROM Produto ORDER BY " +
+        "SELECT * FROM Produto WHERE usuarioId = :usuarioId ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN nome END ASC, " +
                 "CASE WHEN :crescente = 0 THEN nome END DESC"
     )
-    fun buscaOrdenadaPorNome(crescente: Boolean): Flow<List<Produto>>
+    fun buscaOrdenadaPorNome(crescente: Boolean, usuarioId: String): Flow<List<Produto>>
 
     @Query(
-        "SELECT * FROM Produto ORDER BY " +
+        "SELECT * FROM Produto WHERE usuarioId = :usuarioId ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN descricao END ASC, " +
                 "CASE WHEN :crescente = 0 THEN descricao END DESC"
     )
-    fun buscaOrdenadaPorDescricao(crescente: Boolean): Flow<List<Produto>>
+    fun buscaOrdenadaPorDescricao(crescente: Boolean, usuarioId: String): Flow<List<Produto>>
 
     @Query(
-        "SELECT * FROM Produto ORDER BY " +
+        "SELECT * FROM Produto WHERE usuarioId = :usuarioId ORDER BY " +
                 "CASE WHEN :crescente = 1 THEN valor END ASC, " +
                 "CASE WHEN :crescente = 0 THEN valor END DESC"
     )
-    fun buscaOrdenadaPorValor(crescente: Boolean): Flow<List<Produto>>
+    fun buscaOrdenadaPorValor(crescente: Boolean, usuarioId: String): Flow<List<Produto>>
 
     @Query("SELECT * FROM Produto WHERE id = :idProduto")
     fun buscaProduto(idProduto: Long): Flow<Produto?>

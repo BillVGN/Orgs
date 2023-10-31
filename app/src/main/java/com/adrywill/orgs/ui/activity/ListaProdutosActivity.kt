@@ -5,27 +5,21 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import com.adrywill.orgs.R
 import com.adrywill.orgs.database.AppDatabase
 import com.adrywill.orgs.databinding.ActivityListaProdutosBinding
 import com.adrywill.orgs.extensions.vaiPara
 import com.adrywill.orgs.model.Produto
-import com.adrywill.orgs.preferences.dataStore
-import com.adrywill.orgs.preferences.usuarioLogadoPreferences
 import com.adrywill.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 private const val TAG = "ListaProdutosActivity"
 
-class ListaProdutosActivity : AppCompatActivity() {
+class ListaProdutosActivity : UsuarioBaseActivity() {
 
     private val adapter = ListaProdutosAdapter(context = this)
     private val layout by lazy {
@@ -33,9 +27,6 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
     private val produtoDao by lazy {
         AppDatabase.instancia(this).produtoDao()
-    }
-    private val usuarioDao by lazy {
-        AppDatabase.instancia(this).usuarioDao()
     }
 
     private var ordenacaoLista: Int = R.id.menu_lista_produtos_nenhuma
@@ -46,33 +37,12 @@ class ListaProdutosActivity : AppCompatActivity() {
         configuraFAB()
         lifecycleScope.launch {
             launch {
-                verificaUsuarioLogado()
-            }
-        }
-        super.onCreate(savedInstanceState)
-    }
-
-    private suspend fun verificaUsuarioLogado() {
-        dataStore.data.collect { preferences ->
-            preferences[usuarioLogadoPreferences]?.let { usuarioId ->
-                buscaUsuario(usuarioId)
-            } ?: vaiParaLogin()
-        }
-    }
-
-    private fun buscaUsuario(usuarioId: String) {
-        lifecycleScope.launch {
-            usuarioDao.buscaPorId(usuarioId).firstOrNull()?.let {
-                launch {
-                    buscaProdutosUsuario()
+                usuario.filterNotNull().collect {
+                    buscaProdutosUsuario(it.id)
                 }
             }
         }
-    }
-
-    private fun vaiParaLogin() {
-        vaiPara(LoginActivity::class.java)
-        finish()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -82,18 +52,21 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_lista_produtos_sair_do_app -> {
-                lifecycleScope.launch {
-                    deslogaUsuario()
-                }
+            R.id.menu_lista_produtos_perfil_usuario -> {
+                vaiPara(PerfilUsuarioActivity::class.java)
             }
 
             else -> {
                 if (item.itemId != R.id.menu_lista_produtos_ordenacao) {
                     item.isChecked = true
                     lifecycleScope.launch {
-                        buscaListaOrdenada(item.itemId).collect {
-                            adapter.atualiza(it)
+                        usuario.value?.let { usuario ->
+                            buscaListaOrdenada(
+                                item.itemId,
+                                usuario.id
+                            ).collect {
+                                adapter.atualiza(it)
+                            }
                         }
                     }
                 }
@@ -102,42 +75,36 @@ class ListaProdutosActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private suspend fun deslogaUsuario() {
-        dataStore.edit { preferences ->
-            preferences.remove(usuarioLogadoPreferences)
-        }
-    }
-
-    private fun buscaListaOrdenada(idMenuItem: Int): Flow<List<Produto>> {
+    private fun buscaListaOrdenada(idMenuItem: Int, usuarioId: String): Flow<List<Produto>> {
         ordenacaoLista = idMenuItem
         val flowProdutos = with(produtoDao) {
             when (idMenuItem) {
                 R.id.menu_lista_produtos_nome_asc -> {
-                    buscaOrdenadaPorNome(true)
+                    buscaOrdenadaPorNome(true, usuarioId)
                 }
 
                 R.id.menu_lista_produtos_nome_desc -> {
-                    buscaOrdenadaPorNome(false)
+                    buscaOrdenadaPorNome(false, usuarioId)
                 }
 
                 R.id.menu_lista_produtos_descricao_asc -> {
-                    buscaOrdenadaPorDescricao(true)
+                    buscaOrdenadaPorDescricao(true, usuarioId)
                 }
 
                 R.id.menu_lista_produtos_descricao_desc -> {
-                    buscaOrdenadaPorDescricao(false)
+                    buscaOrdenadaPorDescricao(false, usuarioId)
                 }
 
                 R.id.menu_lista_produtos_valor_asc -> {
-                    buscaOrdenadaPorValor(true)
+                    buscaOrdenadaPorValor(true, usuarioId)
                 }
 
                 R.id.menu_lista_produtos_valor_desc -> {
-                    buscaOrdenadaPorValor(false)
+                    buscaOrdenadaPorValor(false, usuarioId)
                 }
 
                 else -> {
-                    buscaTodos()
+                    buscaTodosDoUsuario(usuarioId)
                 }
             }
         }
@@ -175,7 +142,9 @@ class ListaProdutosActivity : AppCompatActivity() {
                                 AppDatabase.instancia(this@ListaProdutosActivity).produtoDao()
                             lifecycleScope.launch {
                                 produtoDao.remove(produto)
-                                buscaProdutosUsuario()
+                                usuario.value?.let { usuario ->
+                                    buscaProdutosUsuario(usuario.id)
+                                }
                             }
                             true
                         }
@@ -189,8 +158,8 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun buscaProdutosUsuario() {
-        buscaListaOrdenada(ordenacaoLista).collect {
+    private suspend fun buscaProdutosUsuario(usuarioId: String) {
+        buscaListaOrdenada(ordenacaoLista, usuarioId).collect {
             adapter.atualiza(it)
         }
     }
