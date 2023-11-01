@@ -20,6 +20,9 @@
             android:exported="false"
             android:label="Perfil"/>
         <activity
+            android:name=".ui.activity.TodosProdutosActivity"
+            android:exported="false"/>
+        <activity
             android:name=".ui.activity.ListaProdutosActivity"
             android:exported="true">
             <intent-filter>
@@ -33,7 +36,8 @@
             android:theme="@style/Theme.Orgs.NoActionBar" />
         <activity
             android:name=".ui.activity.FormularioCadastroUsuarioActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="Cadastrar Produto"/>
         <activity
             android:name=".ui.activity.DetalhesProduto"
             android:exported="false" />

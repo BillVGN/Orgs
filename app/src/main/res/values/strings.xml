@@ -20,4 +20,5 @@
     <string name="cadastrar">Cadastrar</string>
     <string name="activity_perfil_usuario_title">Perfil</string>
     <string name="menu_lista_produtos_perfil_usuario">Perfil do Usuário</string>
+    <string name="sem_usuario">Sem usuário</string>
 </resources>

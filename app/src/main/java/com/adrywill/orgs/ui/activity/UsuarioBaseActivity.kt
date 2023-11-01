@@ -48,6 +48,8 @@ abstract class UsuarioBaseActivity : AppCompatActivity() {
         }
     }
 
+    protected fun usuarios() = usuarioDao.buscaTodos()
+
     protected suspend fun deslogaUsuario() {
         dataStore.edit { preferences ->
             preferences.remove(usuarioLogadoPreferences)

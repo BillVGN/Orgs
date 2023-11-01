@@ -22,13 +22,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:textSize="32sp"
         android:text="TextView"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="@+id/perfil_usuario_id"
         app:layout_constraintStart_toStartOf="@+id/perfil_usuario_id"
-        app:layout_constraintTop_toBottomOf="@+id/perfil_usuario_id" />
+        app:layout_constraintTop_toBottomOf="@id/perfil_usuario_id" />
 
     <Button
         android:id="@+id/perfil_usuario_sair_do_app"
@@ -36,11 +34,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:backgroundTint="#F44336"
-        app:icon="@drawable/ic_action_sair_do_app"
         android:text="Sair do App"
+        app:icon="@drawable/ic_action_sair_do_app"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/perfil_usuario_id"
-        app:layout_constraintStart_toStartOf="@+id/perfil_usuario_id"
+        app:layout_constraintEnd_toEndOf="@id/perfil_usuario_id"
+        app:layout_constraintStart_toStartOf="@id/perfil_usuario_id"
         app:layout_constraintTop_toBottomOf="@+id/perfil_usuario_nome"
         app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

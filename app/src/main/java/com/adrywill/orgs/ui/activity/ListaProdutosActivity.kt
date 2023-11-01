@@ -55,6 +55,9 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             R.id.menu_lista_produtos_perfil_usuario -> {
                 vaiPara(PerfilUsuarioActivity::class.java)
             }
+            R.id.menu_lista_produtos_todos -> {
+                vaiPara(TodosProdutosActivity::class.java)
+            }
 
             else -> {
                 if (item.itemId != R.id.menu_lista_produtos_ordenacao) {
